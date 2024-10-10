@@ -58,27 +58,32 @@ export async function doAttendanceForAccount(token: string, options: Options) {
   const characterList = list.map(i => i.bindingList).flat()
   await Promise.all(characterList.map(async (character) => {
     console.log(`将签到第${successAttendance + 1}个角色`)
-    const data = await attendance(cred, signToken, {
-      uid: character.uid,
-      gameId: character.channelMasterId,
-    })
-    if (data) {
-      if (data.code === 0 && data.message === 'OK') {
-        const msg = `${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${getPrivacyName(character.nickName)} 签到成功${`, 获得了${data.data.awards.map(a => `「${a.resource.name}」${a.count}个`).join(',')}`}`
-        combineMessage(msg)
-        successAttendance++
-      }
-      else {
+    try {
+      const data = await attendance(cred, signToken, {
+        uid: character.uid,
+        gameId: character.channelMasterId,
+      })
+      if (data) {
+        if (data.code === 0 && data.message === 'OK') {
+          const msg = `${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${getPrivacyName(character.nickName)} 签到成功${`, 获得了${data.data.awards.map(a => `「${a.resource.name}」${a.count}个`).join(',')}`}`
+          combineMessage(msg)
+          successAttendance++
+        } else {
         const msg = `${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${getPrivacyName(character.nickName)} 签到失败${`, 错误消息: ${data.message}\n\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``}`
         combineMessage(msg, true)
-      }
-
-      // 多个角色之间的延时
-      await setTimeout(3000)
-    }
-    else {
+        }
+      } else {
       combineMessage(`${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${getPrivacyName(character.nickName)} 今天已经签到过了`)
+      }
+    } catch (error: any) {
+      if (error.response && error.response.status === 403) {
+        combineMessage(`${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${getPrivacyName(character.nickName)} 今天已经签到过了`)
+      } else {
+      combineMessage(`签到过程中出现未知错误: ${error.message}`, true)
+      }
     }
+    // 多个角色之间的延时
+    await setTimeout(3000)
   }))
   if (successAttendance !== 0)
     combineMessage(`成功签到${successAttendance}个角色`)
