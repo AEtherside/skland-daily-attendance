@@ -80,6 +80,8 @@ export async function doAttendanceForAccount(token: string, options: Options) {
         combineMessage(`${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${getPrivacyName(character.nickName)} 今天已经签到过了`)
       } else {
       combineMessage(`签到过程中出现未知错误: ${error.message}`, true)
+      console.error("发生未知错误，工作流终止。")
+      process.exit(1)
       }
     }
     // 多个角色之间的延时
