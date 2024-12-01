@@ -1,6 +1,5 @@
 import pako from 'pako'
-import CryptoJS from 'crypto-js'
-import forge from 'node-forge'
+import { encryptAES, encryptObjectByDESRules, encryptRSA, md5 } from './crypto'
 
 // DES_RULE 的类型定义
 interface DESRule {
@@ -180,71 +179,6 @@ export const BROWSER_ENV = {
   status: '0011', // 不知道在干啥
 }
 
-function padData(data: string): string {
-  const blockSize = 8
-  const padLength = blockSize - (data.length % blockSize)
-  return data + '\0'.repeat(padLength)
-}
-
-export async function _DES(o: Record<string, any>): Promise<Record<string, any>> {
-  const result: Record<string, any> = {}
-
-  for (const i in o) {
-    if (i in DES_RULE) {
-      const rule = DES_RULE[i]
-      let res = o[i]
-
-      if (rule.is_encrypt === 1) {
-        // 将输入转换为字符串
-        const inputStr = padData(String(res))
-
-        // 创建 key
-        const keyWordArray = CryptoJS.enc.Utf8.parse(rule.key!)
-
-        // 创建输入数据
-        const dataWordArray = CryptoJS.enc.Utf8.parse(inputStr)
-
-        // 使用 TripleDES 加密 (ECB 模式)
-        const encrypted = CryptoJS.TripleDES.encrypt(dataWordArray, keyWordArray, {
-          mode: CryptoJS.mode.ECB,
-          padding: CryptoJS.pad.NoPadding,
-        })
-
-        // 转换为 base64
-        res = encrypted.toString()
-      }
-      result[rule.obfuscated_name] = res || ''
-    }
-    else {
-      result[i] = o[i]
-    }
-  }
-  return result
-}
-
-export async function _AES(v: string, k: string): Promise<string> {
-  const iv = '0102030405060708'
-
-  // 确保输入数据是 WordArray 类型并进行手动填充
-  let data = CryptoJS.enc.Utf8.parse(v)
-  // 添加一个 \x00 字节
-  data = data.concat(CryptoJS.enc.Utf8.parse('\x00'))
-  // 补齐到 16 字节的倍数
-  while (data.sigBytes % 16 !== 0)
-    data = data.concat(CryptoJS.enc.Utf8.parse('\x00'))
-
-  const key = CryptoJS.enc.Utf8.parse(k)
-  const ivParams = CryptoJS.enc.Utf8.parse(iv)
-
-  const encrypted = CryptoJS.AES.encrypt(data, key, {
-    iv: ivParams,
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.NoPadding,
-  })
-
-  return encrypted.ciphertext.toString()
-}
-
 const stringify = (obj: any) => JSON.stringify(obj).replace(/":"/g, '": "').replace(/","/g, '", "')
 
 export function GZIP(o: object): string {
@@ -312,14 +246,8 @@ export async function get_d_id() {
   // 生成 UUID 并计算 priId
   const uid = crypto.randomUUID()
   const priId = md5(uid).substring(0, 16)
-
-  // 使用 node-forge 进行 RSA 加密
-  const publicKey = forge.pki.publicKeyFromPem(
-    `-----BEGIN PUBLIC KEY-----\n${SM_CONFIG.publicKey}\n-----END PUBLIC KEY-----`,
-  )
-
-  const encrypted = publicKey.encrypt(uid, 'RSAES-PKCS1-V1_5')
-  const ep = forge.util.encode64(encrypted)
+  
+  const ep = encryptRSA(uid, SM_CONFIG.publicKey)
 
   // 准备浏览器环境数据
   const browser = {
@@ -331,7 +259,7 @@ export async function get_d_id() {
   }
 
   // 准备加密目标数据
-  const desTarget: any = {
+  const desTarget: Record<string, string | number> = {
     ...browser,
     protocol: 102,
     organization: SM_CONFIG.organization,
@@ -350,13 +278,13 @@ export async function get_d_id() {
   desTarget.tn = md5(get_tn(desTarget))
 
   // DES 加密
-  const desResult = await _DES(desTarget)
+  const desResult = encryptObjectByDESRules(desTarget, DES_RULE)
 
   // GZIP 压缩
   const gzipResult = GZIP(desResult)
 
   // AES 加密
-  const aesResult = await _AES(gzipResult, priId)
+  const aesResult = encryptAES(gzipResult, priId)
 
   const body = {
     appId: 'default',
@@ -384,9 +312,4 @@ export async function get_d_id() {
   }
 
   return `B${resp.detail.deviceId}`
-}
-
-// MD5实现函数
-export function md5(string: string) {
-  return CryptoJS.MD5(string).toString()
 }
