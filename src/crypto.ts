@@ -5,6 +5,11 @@ export async function md5(string: string) {
   return CryptoJSW.MD5(string).toString()
 }
 
+export async function hmacSha256(key: string, data: string) {
+  await CryptoJSW.HmacSHA256.loadWasm()
+  return CryptoJSW.HmacSHA256(data, key).toString()
+}
+
 /**
  * AES CBC 加密
  */

@@ -1,7 +1,7 @@
 import { createFetch } from 'ofetch'
 import { ProxyAgent } from 'proxy-agent'
 import type { AttendanceResponse, BindingResponse, CredResponse, GetAttendanceResponse, SklandBoard } from '../types'
-import { command_header, createDeviceId, onSignatureRequest } from '../utils'
+import { command_header, getDid, onSignatureRequest } from '../utils'
 import { SKLAND_BOARD_IDS } from '../constant'
 
 const fetch = createFetch({
@@ -27,7 +27,7 @@ export async function signIn(grant_code: string) {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
         'referer': 'https://www.skland.com/',
         'origin': 'https://www.skland.com',
-        'dId': await createDeviceId(),
+        'dId': await getDid(),
         'platform': '3',
         'timestamp': `${Math.floor(Date.now() / 1000)}`,
         'vName': '1.0.0',
