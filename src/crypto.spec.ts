@@ -163,25 +163,25 @@ const BROWSER_ENV = {
 }
 
 describe('crypto', () => {
-  it('md5', () => {
-    expect(md5('123456')).toBe('e10adc3949ba59abbe56e057f20f883e')
+  it('md5', async () => {
+    expect(await md5('123456')).toBe('e10adc3949ba59abbe56e057f20f883e')
   })
 
-  it('encryptAES', () => {
+  it('encryptAES', async() => {
     const message = '123456'
     const key = '1234567890123456'
     const expected = '7f2be80dd2bfc4ae7f6ae62f1f04e384'
-    expect(encryptAES(message, key)).toBe(expected)
+    expect(await encryptAES(message, key)).toBe(expected)
   })
 
-  it('encryptDES', () => {
+  it('encryptDES', async() => {
     const message = '123456'
     const key = '1234567890123456'
     const expected = 'M59RCYudPds='
-    expect(encryptDES(message, key)).toBe(expected)
+    expect(await encryptDES(message, key)).toBe(expected)
   })
 
-  it('encryptObjectByDESRules', () => {
+  it('encryptObjectByDESRules', async () => {
     const object = BROWSER_ENV
 
     const rules = DES_RULE
@@ -199,6 +199,6 @@ describe('crypto', () => {
       zx: 'gxHeT3BY9PJ+tysf0WFAQ+4iqjE4Jw1gHFwaMqRgMKbMWRpsOZ58yQ==',
     }
 
-    expect(encryptObjectByDESRules(object, rules)).toEqual(expected)
+    expect(await encryptObjectByDESRules(object, rules)).toEqual(expected)
   })
 })

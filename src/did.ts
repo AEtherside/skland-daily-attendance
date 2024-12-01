@@ -188,6 +188,7 @@ export function GZIP(o: object): string {
     level: 2,
   })
 
+  // Python OS FLG = Unknown
   compressed.set([19], 9)
 
   return btoa(String.fromCharCode(...compressed))
@@ -237,7 +238,7 @@ export async function get_smid() {
   const v = `${_time + uidMd5}00`
 
   // 计算smsk_web
-  const smsk_web = md5(`smsk_web_${v}`).substring(0, 14)
+  const smsk_web = (await md5(`smsk_web_${v}`)).substring(0, 14)
 
   return `${v + smsk_web}0`
 }
@@ -245,9 +246,9 @@ export async function get_smid() {
 export async function get_d_id() {
   // 生成 UUID 并计算 priId
   const uid = crypto.randomUUID()
-  const priId = md5(uid).substring(0, 16)
-  
-  const ep = encryptRSA(uid, SM_CONFIG.publicKey)
+  const priId = (await md5(uid)).substring(0, 16)
+
+  const ep = await encryptRSA(uid, SM_CONFIG.publicKey)
 
   // 准备浏览器环境数据
   const browser = {
@@ -275,16 +276,16 @@ export async function get_d_id() {
   }
 
   // 计算并添加 tn
-  desTarget.tn = md5(get_tn(desTarget))
+  desTarget.tn = await md5(get_tn(desTarget))
 
   // DES 加密
-  const desResult = encryptObjectByDESRules(desTarget, DES_RULE)
+  const desResult = await encryptObjectByDESRules(desTarget, DES_RULE)
 
   // GZIP 压缩
   const gzipResult = GZIP(desResult)
 
   // AES 加密
-  const aesResult = encryptAES(gzipResult, priId)
+  const aesResult = await encryptAES(gzipResult, priId)
 
   const body = {
     appId: 'default',
