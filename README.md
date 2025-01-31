@@ -16,7 +16,9 @@
 
 ### 获取凭据
 
-登录森空岛网页版后，打开 https://web-api.skland.com/account/info/hg 记下 content 字段的值
+登录 [森空岛网页版](https://www.skland.com/) 后，打开 https://web-api.skland.com/account/info/hg 记下 content 字段的值
+
+或者登录 [鹰角网络通行证](https://user.hypergryph.com/login) 后，打开 https://web-api.hypergryph.com/account/info/hg 记下 content 字段的值
 
 ### 添加 Cookie 至 Secrets
 
