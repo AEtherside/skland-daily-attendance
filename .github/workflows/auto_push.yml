@@ -1,0 +1,36 @@
+name: 自动push防止Actions自动停止
+
+on:
+  schedule:
+    - cron: '0 0 1,15 * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id || github.actor == 'Google'
+
+    steps:
+      - name: Getting the repo
+        uses: actions/checkout@v3
+
+      - name: Re setting the url for `origin`
+        run: |
+          git remote set-url origin https://${{ github.repository_owner }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+      - name: Adding git info
+        run: |
+          git config --global user.name "Google"
+          git config --global user.email "opensource@google.com"
+
+      - name: Creating an empty commit
+        run: |
+          git commit --allow-empty -m "Auto amazing commit"
+
+      - name: Finilly pushing the repo
+        run: |
+          git push origin ${{ github.ref_name }}
+
+      - name: 文件来自 https://github.com/MayoBlueSky/My-Actions/blob/master/.github/workflows/auto_push.yml 非常感谢
+        run: |
+          echo "文件来自 https://github.com/MayoBlueSky/My-Actions/blob/master/.github/workflows/auto_push.yml 非常感谢"
