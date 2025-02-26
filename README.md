@@ -31,6 +31,8 @@
 - 支持 server 酱推送每日签到信息，建立名为 `SERVERCHAN_SENDKEY` 的 secret 填入你 server 酱的推送密钥
 
 - 支持 bark 推送每日签到信息，建立名为 `BARK_URL` 的 secret 填入你 bark 的推送地址，例如 `https://api.day.app/xxxxxxxxxx/`，支持自建服务器
+#### 错误重试
+- 支持定义变量 `MAX_RETRIES` 来自定义重试次数（需为纯数字，默认值为3）
 
 <details>
   <summary>最终可能有的 secrets 如下</summary>
@@ -38,6 +40,7 @@
 | Name               | Secret                                                           |
 | ------------------ | ---------------------------------------------------------------- |
 | SKLAND_TOKEN \*    | 森空岛 token <br>多账号使用半角逗号`,`分割                        |
+| MAX_RETRIES | 重试次数（纯数字，默认3次） |
 | SERVERCHAN_SENDKEY | Server 酱推送密钥，可选                                          |
 | BARK_URL           | Bark 推送地址，可选                                              |
 </details>
@@ -51,6 +54,8 @@
 至此，部署完毕。
 
 > 注意：github actions 会对60天没有活动的仓库自动禁用，你可能要主动关注一下 github actions 的运行情况（一般会发邮件通知 actions 执行失败）
+
+### 本仓库使用了 `Actions` 自动活跃工作流，也需要手动执行一次，之后就不用管 `Actions` 了
 
 ## ~~广告~~
 
