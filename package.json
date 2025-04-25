@@ -2,7 +2,7 @@
   "name": "skland-daily-attendance",
   "type": "module",
   "version": "1.0.0",
-  "packageManager": "pnpm@9.15.4",
+  "packageManager": "pnpm@10.8.1",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -16,23 +16,18 @@
   },
   "dependencies": {
     "date-fns": "^4.1.0",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "mima-kit": "^0.0.16",
     "ofetch": "^1.4.1",
-    "pako": "^2.1.0",
-    "tsx": "^4.19.2",
-    "ufo": "^1.5.4"
+    "tsx": "^4.19.3",
+    "ufo": "^1.6.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.14.0",
-    "@types/crypto-js": "^4.2.2",
+    "@antfu/eslint-config": "^4.12.0",
     "@types/eslint": "^9.6.1",
-    "@types/jsdom": "^21.1.7",
-    "@types/node": "^22.10.7",
-    "@types/node-forge": "^1.3.11",
-    "@types/pako": "^2.0.3",
-    "eslint": "^9.18.0",
-    "typescript": "^5.7.3",
-    "vitest": "^3.0.2"
+    "@types/node": "^22.14.1",
+    "eslint": "^9.24.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
   }
 }

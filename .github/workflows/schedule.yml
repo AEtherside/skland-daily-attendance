@@ -45,3 +45,4 @@ jobs:
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
           BARK_URL: ${{ secrets.BARK_URL }}
           SELECT_CHANNEL: ${{ secrets.SELECT_CHANNEL }}
+          MESSAGE_PUSHER_URL: ${{ secrets.MESSAGE_PUSHER_URL }}

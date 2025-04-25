@@ -31,6 +31,24 @@
 - 支持 server 酱推送每日签到信息，建立名为 `SERVERCHAN_SENDKEY` 的 secret 填入你 server 酱的推送密钥
 
 - 支持 bark 推送每日签到信息，建立名为 `BARK_URL` 的 secret 填入你 bark 的推送地址，例如 `https://api.day.app/xxxxxxxxxx/`，支持自建服务器
+
+- 支持 message-pusher 推送每日签到信息，建立名为 `MESSAGE_PUSHER_URL` 的 secret 填入你 Webhook 地址，例如 `https://msgpusher.com/webhook/xxxxx`，支持自建服务器
+  - 抽取规则
+  ```json
+  {
+    "title": "title",
+    "description": "content",
+    "content": "content"
+  }
+  ```
+  - 构建规则
+  ```json
+  {
+    "title": "$title",
+    "description": "$description",
+    "content": "$content"
+  }
+  ```
 #### 错误重试
 - 支持定义变量 `MAX_RETRIES` 来自定义重试次数（需为纯数字，如果读取错误，则自动切换为默认值，默认值为3，各账号的重试次数不共享，即每个账号拥有3次重试次数）
 
@@ -43,6 +61,7 @@
 | MAX_RETRIES | 重试次数（纯数字，默认3次，次数不共享） |
 | SERVERCHAN_SENDKEY | Server 酱推送密钥，可选                                          |
 | BARK_URL           | Bark 推送地址，可选                                              |
+| MESSAGE_PUSHER_URL | Message Pusher 推送地址，可选                                    |
 </details>
 
 ### 启动 Github Action

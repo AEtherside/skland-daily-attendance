@@ -1,7 +1,7 @@
 import process from 'node:process'
 import { setTimeout } from 'node:timers/promises'
 import { attendance, auth, getBinding, signIn } from './api'
-import { bark, serverChan } from './notifications'
+import { bark, serverChan, messagePusher } from './notifications'
 import { getPrivacyName } from './utils'
 
 interface Options {
@@ -9,6 +9,8 @@ interface Options {
   withServerChan?: false | string
   /** bark 推送功能的启用，false 或者 bark 的 URL */
   withBark?: false | string
+  /** 消息推送功能的启用，false 或者 message-pusher 的 WebHook URL */
+  withMessagePusher?: false | string
 }
 
 export async function doAttendanceForAccount(token: string, options: Options) {
@@ -37,6 +39,13 @@ export async function doAttendanceForAccount(token: string, options: Options) {
         if (options.withBark) {
           await bark(
             options.withBark,
+            `【森空岛每日签到】`,
+            messages.join('\n\n'),
+          )
+        }
+        if (options.withMessagePusher) {
+          await messagePusher(
+            options.withMessagePusher,
             `【森空岛每日签到】`,
             messages.join('\n\n'),
           )

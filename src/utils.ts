@@ -1,7 +1,6 @@
 import type { FetchContext } from 'ofetch'
 import { webcrypto } from 'node:crypto'
 import { format } from 'date-fns'
-import pako from 'pako'
 import { stringifyQuery } from 'ufo'
 import { BROWSER_ENV, DES_RULE, SKLAND_SM_CONFIG } from './constant'
 import { encryptAES, encryptObjectByDESRules, encryptRSA, hmacSha256, md5 } from './crypto'
@@ -75,17 +74,21 @@ export async function onSignatureRequest(ctx: FetchContext) {
 
 const stringify = (obj: any) => JSON.stringify(obj).replace(/":"/g, '": "').replace(/","/g, '", "')
 
-export function gzipObject(o: object) {
-  const jsonStr = stringify(o)
-  const encoded = new TextEncoder().encode(jsonStr)
-  const compressed = pako.gzip(encoded, {
-    level: 2,
-  })
+export async function gzipObject(o: object) {
+  // 将对象转换为字节数组
+  const encoded = new TextEncoder().encode(stringify(o))
 
-  // Python gzip OS FLG = Unknown
-  compressed.set([19], 9)
+  // 使用 CompressionStream 进行 gzip 压缩
+  const compressed = await new Response(
+    new Blob([encoded]).stream().pipeThrough<Uint8Array>(new CompressionStream('gzip')),
+  ).arrayBuffer()
 
-  return btoa(String.fromCharCode(...compressed))
+  // 转换为 Uint8Array 并设置 Python gzip OS FLG
+  const compressedArray = new Uint8Array(compressed)
+  compressedArray[9] = 19 // Python gzip OS FLG = Unknown
+
+  // 转换为 base64
+  return btoa(String.fromCharCode(...compressedArray))
 }
 
 export async function getSmId() {
@@ -174,7 +177,7 @@ export async function getDid() {
   const desResult = await encryptObjectByDESRules(desTarget, DES_RULE)
 
   // GZIP 压缩
-  const gzipResult = gzipObject(desResult)
+  const gzipResult = await gzipObject(desResult)
 
   // AES 加密
   const aesResult = await encryptAES(gzipResult, priId)
