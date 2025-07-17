@@ -1,7 +1,4 @@
-import { webcrypto } from 'node:crypto'
 import * as mima from 'mima-kit'
-
-const crypto = webcrypto
 
 export async function md5(string: string) {
   return mima.md5(mima.UTF8(string)).to(mima.HEX)

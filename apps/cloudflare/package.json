@@ -1,0 +1,28 @@
+{
+  "name": "@skland-x/cloudflare",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev --test-scheduled",
+    "start": "wrangler dev --test-scheduled",
+    "build": "wrangler build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@date-fns/tz": "^1.2.0",
+    "@skland-x/core": "workspace:*",
+    "date-fns": "^4.1.0",
+    "defu": "^6.1.4",
+    "unctx": "^2.4.1",
+    "unstorage": "^1.16.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.32",
+    "wrangler": "^4.16.1"
+  }
+}

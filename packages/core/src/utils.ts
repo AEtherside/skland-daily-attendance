@@ -1,11 +1,8 @@
 import type { FetchContext } from 'ofetch'
-import { webcrypto } from 'node:crypto'
 import { format } from 'date-fns'
 import { stringifyQuery } from 'ufo'
 import { BROWSER_ENV, DES_RULE, SKLAND_SM_CONFIG } from './constant'
 import { encryptAES, encryptObjectByDESRules, encryptRSA, hmacSha256, md5 } from './crypto'
-
-const crypto = webcrypto
 
 export const command_header = {
   'User-Agent': 'Skland/1.21.0 (com.hypergryph.skland; build:102100065; iOS 17.6.0; ) Alamofire/5.7.1',
@@ -201,7 +198,7 @@ export async function getDid() {
     body: JSON.stringify(body),
   })
 
-  const resp = await response.json()
+  const resp = (await response.json()) as { code: number, detail: { deviceId: string } }
   if (resp.code !== 1100) {
     console.log(resp)
     throw new Error('did计算失败，请联系作者')

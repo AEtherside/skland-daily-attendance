@@ -15,7 +15,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.9.0
+          node-version: 22.16.0
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -39,7 +39,7 @@ jobs:
         run: pnpm install
 
       - name: Run daily attendance
-        run: pnpm attendance
+        run: pnpm -C "./apps/node" start
         env:
           SKLAND_TOKEN: ${{ secrets.SKLAND_TOKEN }}
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
