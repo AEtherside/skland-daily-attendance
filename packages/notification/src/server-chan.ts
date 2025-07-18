@@ -10,10 +10,16 @@ export async function serverChan(sendkey: string, title: string, content: string
     title,
     desp: content,
   }
+  
+    // 根据 sendkey 是否以 'sctp' 开头，选择不同的 API URL
+  const url = String(sendkey).match(/^sctp(\d+)t/i) 
+    ? `https://${sendkey.match(/^sctp(\d+)t/i)[1]}.push.ft07.com/send/${sendkey}.send`
+    : `https://sctapi.ftqq.com/${sendkey}.send`
+  
   try {
     // const resp = await axios.post(`https://sctapi.ftqq.com/${sendkey}.send`, payload);
     const data = await ofetch<{ code: number }>(
-      `https://sctapi.ftqq.com/${sendkey}.send`,
+      url,
       {
         method: 'POST',
         body: payload,
