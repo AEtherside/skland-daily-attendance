@@ -4,6 +4,24 @@ on:
   schedule:
     - cron: '0 16 * * *'
   workflow_dispatch:
+  workflow_call:
+    secrets:
+      SKLAND_TOKEN:
+        required: true
+      SERVERCHAN_SENDKEY:
+        required: false
+      BARK_URL:
+        required: false
+      MESSAGE_PUSHER_URL:
+        required: false
+      MAX_RETRIES:
+        required: false
+    inputs:
+      repository:
+        description: 'The repository to run the workflow on'
+        default: 'enpitsuLin/skland-daily-attendance'
+        required: false
+        type: string
 
 jobs:
   attendance:
@@ -11,6 +29,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository || github.repository }}
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -44,5 +64,5 @@ jobs:
           SKLAND_TOKEN: ${{ secrets.SKLAND_TOKEN }}
           SERVER_CHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
           BARK_URL: ${{ secrets.BARK_URL }}
-          SELECT_CHANNEL: ${{ secrets.SELECT_CHANNEL }}
           MESSAGE_PUSHER_URL: ${{ secrets.MESSAGE_PUSHER_URL }}
+          MAX_RETRIES: ${{ secrets.MAX_RETRIES }}
