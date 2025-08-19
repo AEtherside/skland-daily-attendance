@@ -50,9 +50,7 @@ export async function doAttendanceForAccount(token: string, options: Options) {
 
   const messages: string[] = []
   let hasError = false
-
-  messages.push('## 明日方舟签到')
-
+  
   let successAttendance = 0
   const characterList = list.filter(i => i.appCode === 'arknights').map(i => i.bindingList).flat()
   const maxRetries = Number.parseInt(process.env.MAX_RETRIES || '3', 10) // 添加最大重试次数
