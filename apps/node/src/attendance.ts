@@ -48,9 +48,10 @@ export async function doAttendanceForAccount(token: string, options: Options) {
   const { cred, token: signToken } = await signIn(code)
   const { list } = await getBinding(cred, signToken)
 
-  const [combineMessage, excutePushMessage, addMessage] = createCombinePushMessage(options)
+  const messages: string[] = []
+  let hasError = false
 
-  addMessage('## 明日方舟签到')
+  messages.push('## 明日方舟签到')
 
   let successAttendance = 0
   const characterList = list.filter(i => i.appCode === 'arknights').map(i => i.bindingList).flat()
@@ -68,32 +69,34 @@ export async function doAttendanceForAccount(token: string, options: Options) {
         if (data) {
           if (data.code === 0 && data.message === 'OK') {
             const msg = `${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${successAttendance + 1} 签到成功${`, 获得了${data.data.awards.map(a => `「${a.resource.name}」${a.count}个`).join(',')}`}`
-            combineMessage(msg)
+            messages.push(msg)
             successAttendance++
             break // 签到成功，跳出重试循环
           }
           else {
             const msg = `${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${successAttendance + 1} 签到失败${`, 错误消息: ${data.message}\n\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``}`
-            combineMessage(msg, true)
+            messages.push(msg)
+            hasError = true
             retries++ // 签到失败，增加重试计数器
           }
         }
         else {
-          combineMessage(`${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${successAttendance + 1} 今天已经签到过了`)
+          messages.push(`${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${successAttendance + 1} 今天已经签到过了`)
           break // 已经签到过，跳出重试循环
         }
       }
       catch (error: any) {
         if (error.response && error.response.status === 403) {
-          combineMessage(`${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${successAttendance + 1} 今天已经签到过了`)
+          messages.push(`${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${successAttendance + 1} 今天已经签到过了`)
           break // 已经签到过，跳出重试循环
         }
         else {
-          combineMessage(`签到过程中出现未知错误: ${error.message}`, true)
+          messages.push(`签到过程中出现未知错误: ${error.message}`)
+          hasError = true
           console.error('发生未知错误，工作流终止。')
           retries++ // 增加重试计数器
           if (retries >= maxRetries) {
-            process.exit(1) // 达到最大重试次数，终止工作流
+            hasError = true
           }
         }
       }
@@ -102,8 +105,13 @@ export async function doAttendanceForAccount(token: string, options: Options) {
     }
   }))
 
-  if (successAttendance !== 0)
-    combineMessage(`成功签到${successAttendance}个角色`)
+  if (successAttendance !== 0) {
+    messages.push(`成功签到${successAttendance}个角色`)
+  }
 
-  await excutePushMessage()
+    // [修改] 返回消息内容和错误状态
+  return {
+    message: messages.join('\n\n'),
+    hasError
+  }
 }
