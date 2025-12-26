@@ -1,3 +1,4 @@
+import type { AttendanceStatus } from 'skland-kit'
 import process from 'node:process'
 import { setTimeout } from 'node:timers/promises'
 import { createClient } from 'skland-kit'
@@ -7,6 +8,13 @@ const client = createClient()
 
 interface Options {
   notificationUrls?: string | string[]
+}
+
+function isTodayAttended(attendanceStatus: AttendanceStatus) {
+  return attendanceStatus.records.some((i) => {
+    const today = new Date().setHours(0, 0, 0, 0)
+    return new Date(Number(i.ts) * 1000).setHours(0, 0, 0, 0) === today
+  })
 }
 
 function toArray<T>(value: T | T[]): T[] {
@@ -66,20 +74,17 @@ export async function doAttendanceForAccount(token: string, options: Options) {
         }
         const attendanceStatus = await client.collections.game.getAttendanceStatus(query)
 
-
-        if (attendanceStatus) {
-
+        if (isTodayAttended(attendanceStatus)) {
+          combineMessage(`${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${successAttendance + 1} 今天已经签到过了`)
+          break // 已经签到过，跳出重试循环
+        }
+        else {
           const data = await client.collections.game.attendance(query)
 
           const msg = `${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${successAttendance + 1} 签到成功${`, 获得了${data.awards.map(a => `「${a.resource.name}」${a.count}个`).join(',')}`}`
           combineMessage(msg)
           successAttendance++
           break // 签到成功，跳出重试循环
-
-        }
-        else {
-          combineMessage(`${(Number(character.channelMasterId) - 1) ? 'B 服' : '官服'}角色 ${successAttendance + 1} 今天已经签到过了`)
-          break // 已经签到过，跳出重试循环
         }
       }
       catch (error: any) {
