@@ -13,10 +13,7 @@
 
 ## 部署方式
 
-本项目提供两种部署方式，请根据个人需求选择：
-
-1. [Cloudflare Workers 版本](./apps/cloudflare/README.md)
-2. [GitHub Actions 版本](./apps/node//README.md)
+基于 Nitro 构建，使用 Scheduled Tasks 实现定时任务来签到，查看 [Nitro 文档](https://nitro.unjs.io/guide/scheduled-tasks) 了解支持的平台。
 
 ## 注意事项
 
