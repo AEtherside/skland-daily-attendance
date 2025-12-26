@@ -47,7 +47,8 @@ export async function attendCharacter(client: Client, character: AppBindingPlaye
     return await retry(async () => {
       return await attendance(client, character)
     }, maxRetries)
-  } catch (error) {
+  }
+  catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     const characterLabel = formatCharacterName(character)
     return {

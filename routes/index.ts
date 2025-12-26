@@ -7,6 +7,6 @@ export default defineEventHandler(() => {
       headers: {
         'Content-Type': 'text/html',
       },
-    }
+    },
   )
 })

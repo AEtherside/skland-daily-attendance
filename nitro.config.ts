@@ -14,6 +14,6 @@ export default defineConfig({
     maxRetries: '3',
     nitro: {
       envPrefix: 'SKLAND_',
-    }
+    },
   },
 })

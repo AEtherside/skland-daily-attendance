@@ -59,10 +59,8 @@ jobs:
         run: pnpm install
 
       - name: Run daily attendance
-        run: pnpm -C "./apps/node" start
+        run: pnpm action
         env:
-          SKLAND_TOKEN: ${{ secrets.SKLAND_TOKEN }}
-          SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
-          BARK_URL: ${{ secrets.BARK_URL }}
-          MESSAGE_PUSHER_URL: ${{ secrets.MESSAGE_PUSHER_URL }}
-          MAX_RETRIES: ${{ secrets.MAX_RETRIES }}
+          SKLAND_TOKENS: ${{ secrets.SKLAND_TOKEN }}
+          SKLAND_NOTIFICATION_URLS: ${{ secrets.SERVERCHAN_SENDKEY }}
+          SKLAND_MAX_RETRIES: ${{ secrets.MAX_RETRIES }}

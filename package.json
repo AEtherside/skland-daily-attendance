@@ -10,6 +10,7 @@
     "build": "nitro build",
     "dev": "nitro dev",
     "preview": "node .output/server/index.mjs",
+    "action": "node scripts/action.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -23,6 +24,7 @@
     "eslint": "catalog:dev",
     "nitro": "catalog:dev",
     "rolldown": "catalog:build",
-    "typescript": "catalog:dev"
+    "typescript": "catalog:dev",
+    "wait-on": "catalog:dev"
   }
 }
