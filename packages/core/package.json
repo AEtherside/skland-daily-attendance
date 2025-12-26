@@ -2,7 +2,7 @@
   "name": "@skland-x/core",
   "type": "module",
   "version": "0.0.0",
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.26.2",
   "description": "My awesome typescript library",
   "license": "MIT",
   "exports": {
@@ -26,12 +26,12 @@
   },
   "dependencies": {
     "date-fns": "^4.1.0",
-    "mima-kit": "^0.0.16",
-    "ofetch": "^1.4.1",
+    "mima-kit": "^0.1.0",
+    "ofetch": "^1.5.1",
     "ufo": "^1.6.1"
   },
   "devDependencies": {
-    "tsdown": "^0.12.3",
-    "vitest": "^3.1.4"
+    "tsdown": "^0.18.3",
+    "vitest": "^4.0.16"
   }
 }

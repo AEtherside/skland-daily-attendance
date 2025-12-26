@@ -14,15 +14,15 @@
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
-    "@date-fns/tz": "^1.2.0",
+    "@date-fns/tz": "^1.4.1",
     "@skland-x/core": "workspace:*",
     "date-fns": "^4.1.0",
     "defu": "^6.1.4",
-    "unctx": "^2.4.1",
-    "unstorage": "^1.16.0"
+    "unctx": "^2.5.0",
+    "unstorage": "^1.17.3"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.32",
-    "wrangler": "^4.16.1"
+    "@cloudflare/vitest-pool-workers": "^0.11.1",
+    "wrangler": "^4.54.0"
   }
 }
