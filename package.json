@@ -9,9 +9,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "build": "pnpm --filter \"./packages/*\" build",
-    "prepare": "pnpm build"
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
