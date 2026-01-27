@@ -19,7 +19,7 @@ async function attendance(client: Client, character: AppBindingPlayer, appName?:
   const characterLabel = formatCharacterName(character, appName)
   const query = {
     uid: character.uid,
-    gameId: character.channelMasterId,
+    gameId: character.gameId.toString(),
   }
 
   const attendanceStatus = await client.collections.game.getAttendanceStatus(query)
