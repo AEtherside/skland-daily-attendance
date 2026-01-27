@@ -10,6 +10,8 @@ on:
         required: true
       SKLAND_NOTIFICATION_URLS:
         required: false
+      SKLAND_AMONGUS:
+        required: false
       MAX_RETRIES:
         required: false
     inputs:
@@ -60,3 +62,4 @@ jobs:
           SKLAND_TOKENS: ${{ secrets.SKLAND_TOKENS }}
           SKLAND_NOTIFICATION_URLS: ${{ secrets.SKLAND_NOTIFICATION_URLS }}
           SKLAND_MAX_RETRIES: ${{ secrets.MAX_RETRIES }}
+          SKLAND_AMONGUS: ${{ secrets.SKLAND_AMONGUS }}
