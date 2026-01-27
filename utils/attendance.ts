@@ -15,8 +15,8 @@ export interface AttendanceResult {
   hasError: boolean
 }
 
-async function attendance(client: Client, character: AppBindingPlayer): Promise<AttendanceResult> {
-  const characterLabel = formatCharacterName(character)
+async function attendance(client: Client, character: AppBindingPlayer, appName?: string): Promise<AttendanceResult> {
+  const characterLabel = formatCharacterName(character, appName)
   const query = {
     uid: character.uid,
     gameId: character.channelMasterId,
@@ -42,15 +42,15 @@ async function attendance(client: Client, character: AppBindingPlayer): Promise<
   }
 }
 
-export async function attendCharacter(client: Client, character: AppBindingPlayer, maxRetries: number): Promise<AttendanceResult> {
+export async function attendCharacter(client: Client, character: AppBindingPlayer, maxRetries: number, appName?: string): Promise<AttendanceResult> {
   try {
     return await retry(async () => {
-      return await attendance(client, character)
+      return await attendance(client, character, appName)
     }, maxRetries)
   }
   catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
-    const characterLabel = formatCharacterName(character)
+    const characterLabel = formatCharacterName(character, appName)
     return {
       success: false,
       message: `${characterLabel} 签到过程中出现未知错误: ${errorMessage}`,
