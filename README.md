@@ -43,6 +43,20 @@
      | `SKLAND_TOKENS` | 森空岛凭据，多个账号用逗号分隔 | 必填 |
      | `SKLAND_NOTIFICATION_URLS` | 通知 URL，多个 URL 用逗号分隔 | 可选 |
      | `MAX_RETRIES` | 最大重试次数，默认为 3 | 可选 |
+     | `SKLAND_AMONGUS` | 隐藏角色名，开启值为`ENABLE_AMONGUS`默认关闭 | 可选 |
+
+<details>
+  <summary>关于 "SKLAND_AMONGUS" Secret 名称</summary>
+
+  作用：隐藏角色名，开启值为`ENABLE_AMONGUS`默认关闭
+
+  效果：
+```
+  开始处理...
+  【明日方舟】官服角色 博士 #[数字占位符] 今天已经签到过了
+  【明日方舟：终末地】官服角色 管理员 lv.[等级占位符] 今天已经签到过了
+```
+  </details>
 
   3. **启用 GitHub Actions**
 
@@ -81,7 +95,7 @@
 
 登录 [森空岛网页版](https://www.skland.com/) 后，打开 https://web-api.skland.com/account/info/hg 记下 content 字段的值
 
-或者登录 [鹰角网络通行证](https://user.hypergryph.com/login) 后打开 https://web-api.hypergryph.com/account/info/hg 记下 content 字段的值
+或者登录 [鹰角网络通行证](https://user.hypergryph.com/login) 后，打开 https://web-api.hypergryph.com/account/info/hg 记下 content 字段的值（推荐）
 
 将获取的凭据设置到环境变量 `SKLAND_TOKENS` 中，多个凭据用逗号分隔。
 
