@@ -13,11 +13,7 @@ export function formatGameName(appCode: string): string {
 
 export function formatCharacterName(character: AppBindingPlayer, appName?: string) {
   const gamePrefix = appName ? `【${appName}】` : ''
-  return `${gamePrefix}${formatChannelName(character.channelMasterId)}角色${formatPrivacyName(character)}`
-}
-
-export function formatChannelName(channelMasterId: string): string {
-  return Number(channelMasterId) - 1 ? 'B 服' : '官服'
+  return `${gamePrefix}${character.channelName}角色${formatPrivacyName(character)}`
 }
 
 export function formatPrivacyName(character: AppBindingPlayer) {
