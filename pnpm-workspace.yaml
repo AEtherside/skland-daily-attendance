@@ -16,7 +16,7 @@ catalogs:
     typescript: ^5.9.3
     wait-on: ^9.0.3
   lib:
-    skland-kit: ^0.2.0
+    skland-kit: ^0.3.0
     statocysts: ^0.9.1
     unctx: ^2.5.0
     unstorage: ^2.0.0-alpha.5
