@@ -46,7 +46,7 @@ async function attendance(client: Client, character: AppBindingPlayer, appName?:
       }
     }
     const data = await client.collections.game.attendance(query)
-    const awards = data.awardIds.map(a => {
+    const awards = data.awardIds.map((a) => {
       const awardId = a.id
       const award = data.resourceInfoMap[awardId]
       if (!award) {
@@ -94,8 +94,22 @@ export async function attendCharacter(client: Client, character: AppBindingPlaye
     }, maxRetries)
   }
   catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
     const characterLabel = formatCharacterName(character, appName)
+
+    // 检查是否是重复签到错误 (code: 10001)
+    if (error instanceof Error && error.cause) {
+      const cause = error.cause as { code?: number, message?: string }
+      if (cause?.code === 10001) {
+        return {
+          success: false,
+          message: `${characterLabel} 今天已经签到过了`,
+          hasError: false,
+        }
+      }
+    }
+
+    // 其他错误处理
+    const errorMessage = error instanceof Error ? error.message : String(error)
     return {
       success: false,
       message: `${characterLabel} 签到过程中出现未知错误: ${errorMessage}`,
