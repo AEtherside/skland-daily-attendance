@@ -226,6 +226,11 @@ SKLAND_TOKENS=your-token-1,your-token-2
 SKLAND_NOTIFICATION_URLS="Statocysts 格式通知 URL"
 ```
 
+#### 2.1 通过Bark配置消息通知（测试中）
+
+> 注意：该功能仍在测试中，目前暂时与 SKLAND_NOTIFICATION_URLS 并行
+通过 [Bark](https://bark.day.app/#/) 和 [Statocysts](https://github.com/octoplorer/statocysts) 支持的通知方式，将自己的Bark地址设置到环境变量 `Bark_TOKEN` 中即可生效，多个 URL 用逗号分隔
+
 ### 3. 配置持久化存储（可选）
 
 项目支持使用持久化存储来记录每日签到状态。
