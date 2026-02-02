@@ -4,8 +4,11 @@ export function toArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value]
 }
 
+export type ExecutionResult = 'success' | 'failed' | 'skipped'
+
 export interface CreateMessageCollectorOptions {
   notificationUrls?: string | string[]
+  barkTokens?: string[]
   onError?: () => void
 }
 
@@ -27,6 +30,9 @@ export interface MessageCollector {
   info: (message: string) => void
   infoError: (message: string) => void
 
+  // Execution result
+  setResult: (result: ExecutionResult) => void
+
   // Utility
   push: () => Promise<void>
   hasError: () => boolean
@@ -35,9 +41,21 @@ export interface MessageCollector {
   collect: (message: string, options?: CollectOptions) => void
 }
 
+function buildBarkUrls(barkTokens: string[], subtitle: string): string[] {
+  const params = new URLSearchParams({
+    subtitle,
+    group: 'Skland Notification',
+    level: 'timeSensitive',
+    url: 'skland://',
+  })
+
+  return barkTokens.map(key => `bark://api.day.app/${key}?${params.toString()}`)
+}
+
 export function createMessageCollector(options: CreateMessageCollectorOptions): MessageCollector {
   const messages: string[] = []
   let hasError = false
+  let executionResult: ExecutionResult = 'success'
 
   const log = (message: string) => {
     console.log(message)
@@ -88,13 +106,35 @@ export function createMessageCollector(options: CreateMessageCollectorOptions): 
     }
   }
 
-  const push = async () => {
-    const title = '【森空岛每日签到】'
-    const content = messages.join('\n\n')
-    const urls = options.notificationUrls ? toArray(options.notificationUrls) : []
-    const sender = createSender(urls)
+  const setResult = (result: ExecutionResult) => {
+    executionResult = result
+  }
 
-    await sender.send(title, content)
+  const push = async () => {
+    const content = messages.join('\n\n')
+
+    // Regular notifications (skip when all accounts are repeated/skipped)
+    if (executionResult !== 'skipped') {
+      const urls = options.notificationUrls ? toArray(options.notificationUrls) : []
+      if (urls.length > 0) {
+        const sender = createSender(urls)
+        await sender.send('【森空岛每日签到】', content)
+      }
+    }
+
+    // Bark notifications (always fire, with dynamic subtitle)
+    const barkTokens = options.barkTokens ?? []
+    if (barkTokens.length > 0) {
+      const subtitle = executionResult === 'skipped'
+        ? '重复签到'
+        : executionResult === 'failed'
+          ? '失败❗'
+          : '成功'
+
+      const barkUrls = buildBarkUrls(barkTokens, subtitle)
+      const barkSender = createSender(barkUrls)
+      await barkSender.send('森空岛自动签到', content)
+    }
 
     // Exit with error if any error occurred
     if (hasError && options.onError) {
@@ -102,5 +142,5 @@ export function createMessageCollector(options: CreateMessageCollectorOptions): 
     }
   }
 
-  return { log, error, notify, notifyError, info, infoError, collect, push, hasError: () => hasError } as const
+  return { log, error, notify, notifyError, info, infoError, collect, setResult, push, hasError: () => hasError } as const
 }
