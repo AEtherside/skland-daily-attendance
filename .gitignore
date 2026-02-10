@@ -8,3 +8,7 @@ package-lock.json
 .output
 .data
 data
+
+# Claude Code 配置文件
+.Claude/
+CLAUDE.md
