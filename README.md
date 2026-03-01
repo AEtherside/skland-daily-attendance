@@ -226,6 +226,29 @@ SKLAND_TOKENS=your-token-1,your-token-2
 SKLAND_NOTIFICATION_URLS="Statocysts 格式通知 URL"
 ```
 
+#### 2.1 通过Bark配置消息通知（测试中）
+
+> 注意：该功能仍在测试中, 目前仅在Github Actions部署下尝试通过。
+> 该变量用于定制Bark通知，对其他配置消息没有侵入性修改。
+> 原通知设置也适配了Bark但固定了通知格式
+
+通过 [Bark](https://bark.day.app/#/) 和 [Statocysts](https://github.com/octoplorer/statocysts) 支持的通知方式，将自己的Bark地址设置到环境变量 `BARK_TOKEN` 中即可生效，多个 URL 用逗号分隔。
+
+该通知配置与 `SKLAND_NOTIFICATION_URLS` 并行，两个参数仅配置一个即可。
+
+Bark的json配置存在几个固定参数：
+
+```json
+{
+  "title": "森空岛自动签到",
+  "subtitle": "[成功]/[失败]/[重复签到]",
+  "markdown": "[正文部分]",
+  "group": "Skland Notification",
+  "level": "timeSensitive",
+  "url": "skland://"
+}
+```
+
 ### 3. 配置持久化存储（可选）
 
 项目支持使用持久化存储来记录每日签到状态。

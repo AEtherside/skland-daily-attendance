@@ -11,6 +11,7 @@ export default defineConfig({
   runtimeConfig: {
     tokens: '',
     notificationUrls: '',
+    barkToken: '',
     maxRetries: '3',
     nitro: {
       envPrefix: 'SKLAND_',

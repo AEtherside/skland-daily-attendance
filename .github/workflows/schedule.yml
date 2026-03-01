@@ -12,6 +12,8 @@ on:
         required: false
       SKLAND_ANONYMOUS:
         required: false
+      BARK_TOKEN:
+        required: false
       MAX_RETRIES:
         required: false
     inputs:
@@ -52,3 +54,4 @@ jobs:
           SKLAND_NOTIFICATION_URLS: ${{ secrets.SKLAND_NOTIFICATION_URLS }}
           SKLAND_MAX_RETRIES: ${{ secrets.MAX_RETRIES }}
           SKLAND_ANONYMOUS: ${{ secrets.SKLAND_ANONYMOUS }}
+          SKLAND_BARK_TOKEN: ${{ secrets.BARK_TOKEN }}

@@ -82,6 +82,7 @@ async function processAccount(
     .flatMap(i => i.bindingList)
 
   let accountHasError = false
+  let hasNewAttendance = false
   for (const character of characterList) {
     // Initialize game stats if not exists
     if (!stats.charactersByGame.has(character.gameId)) {
@@ -115,6 +116,7 @@ async function processAccount(
       messageCollector.info(result.message)
       if (result.success) {
         gameStats.succeeded++
+        hasNewAttendance = true
       }
       else {
         // Already attended today
@@ -126,7 +128,13 @@ async function processAccount(
   // Save attendance status only if all characters succeeded
   if (!accountHasError) {
     await storage.setItem(attendanceKey, true)
-    stats.accounts.successful++
+    if (hasNewAttendance) {
+      stats.accounts.successful++
+    }
+    else {
+      // All characters were already attended at API level
+      stats.accounts.skipped++
+    }
   }
   else {
     stats.accounts.failed++
@@ -147,9 +155,11 @@ export default defineTask<'success' | 'failed'>({
     const tokens = getSplitByComma(config.tokens)
 
     const notificationUrls = getSplitByComma(config.notificationUrls)
+    const barkTokens = getSplitByComma(config.barkToken)
 
     const messageCollector = createMessageCollector({
       notificationUrls,
+      barkTokens,
     })
 
     if (tokens.length === 0) {
@@ -233,7 +243,23 @@ export default defineTask<'success' | 'failed'>({
       }
     }
 
-    if (stats.accounts.successful > 0 || stats.accounts.failed > 0)
+    // Determine execution result for Bark subtitle
+    if (stats.accounts.failed > 0) {
+      messageCollector.setResult('failed')
+    }
+    else if (stats.accounts.successful > 0) {
+      messageCollector.setResult('success')
+    }
+    else {
+      messageCollector.setResult('skipped')
+    }
+
+    // Push notifications:
+    // - Regular notifications: only on success/fail
+    // - Bark notifications: also on skipped (repeated attendance)
+    const hasResult = stats.accounts.successful > 0 || stats.accounts.failed > 0
+    const isRepeated = !hasResult && barkTokens.length > 0 && stats.accounts.skipped > 0
+    if (hasResult || isRepeated)
       await messageCollector.push()
 
     return { result: hasFailed ? 'failed' : 'success' }
