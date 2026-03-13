@@ -45,8 +45,8 @@ catalogs:
       specifier: ^0.3.4
       version: 0.3.4
     statocysts:
-      specifier: ^0.11.0
-      version: 0.11.0
+      specifier: ^0.11.1
+      version: 0.11.1
     unctx:
       specifier: ^2.5.0
       version: 2.5.0
@@ -76,7 +76,7 @@ importers:
         version: 0.3.4(@upstash/redis@1.36.3)(aws4fetch@1.0.20)(db0@0.3.4)(ioredis@5.10.0)
       statocysts:
         specifier: catalog:lib
-        version: 0.11.0(typescript@5.9.3)
+        version: 0.11.1(typescript@5.9.3)
       unctx:
         specifier: catalog:lib
         version: 2.5.0
@@ -2387,8 +2387,8 @@ packages:
   standard-as-callback@2.1.0:
     resolution: {integrity: sha512-qoRRSyROncaz1z0mvYqIE4lCd9p2R90i6GxW3uZv5ucSu8tU7B5HXUP1gG8pVZsYNVaXjk8ClXHPttLyxAL48A==}
 
-  statocysts@0.11.0:
-    resolution: {integrity: sha512-Hv9BQkiXKI96V5sJqKD1A1NsXwjUr9QzN0Uu6low+gdWqMFp2TfqBYf4JRBw9lLa3wD8ExLUbSx/TL+2nmbSrw==}
+  statocysts@0.11.1:
+    resolution: {integrity: sha512-gLgG85QaUS6h+3mfP+5re3MZwkpXZJ9Ld8Vt6zB+eVw2lnPG8Tpy0Vg13hodlWx16kR4sudNEy6h9vVHfyZWjg==}
     engines: {node: '>=24.12.0'}
 
   strip-indent@4.1.1:
@@ -5015,7 +5015,7 @@ snapshots:
 
   standard-as-callback@2.1.0: {}
 
-  statocysts@0.11.0(typescript@5.9.3):
+  statocysts@0.11.1(typescript@5.9.3):
     dependencies:
       add: 2.0.6
       defu: 6.1.4
