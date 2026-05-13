@@ -21,15 +21,15 @@ export default defineConfig({
       codeSplitting: {
         groups: [
           {
-            name: "unstorage",
+            name: 'unstorage',
             test: /node_modules\/unstorage\/dist\/drivers\/(?!redis)/,
           },
           {
-            name: "unstorage-drivers-redis",
+            name: 'unstorage-drivers-redis',
             test: /node_modules\/unstorage\/dist\/drivers\/redis/,
           },
-        ]
-      }
-    }
-  }
+        ],
+      },
+    },
+  },
 })
