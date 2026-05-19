@@ -1,0 +1,12 @@
+name = "skland-daily-attendance"
+compatibility_date = "2026-05-19"
+compatibility_flags = ["nodejs_als"]
+
+[observability]
+enabled = true
+
+[[kv_namespaces]]
+binding = "KV"
+
+[triggers]
+crons = ["30 */2 * * *"]
