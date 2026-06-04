@@ -28,7 +28,7 @@ services:
 
     volumes:
       # 持久化本地文件存储 (如果使用本地文件存储)
-      - ./data:/app/.data
+      - attendance-data:/app/.data
 
     # 如果需要暴露 HTTP 端口用于健康检查或 API 访问
     # ports:
@@ -43,5 +43,6 @@ services:
   #     - redis-data:/data
   #   command: redis-server --appendonly yes
 
-# volumes:
-#   redis-data:
+volumes:
+  attendance-data:
+  # redis-data:
