@@ -78,16 +78,13 @@
 - **attendance** (`.github/workflows/schedule.yml`)
   - 自动签到工作流，每天 16:00 (UTC) 定时执行
   - 支持手动触发和通过 `workflow_call` 被其他工作流调用
-
-- **自动 push 防止 Actions 自动停止** (`.github/workflows/auto_push.yml`)
-  - 保活工作流，每月 1 号和 15 号自动创建空提交并推送
-  - 防止仓库长期无活动导致 GitHub Actions 被自动停用
+  - 定时执行时会自动调用 `liskin/gh-workflow-keepalive@v1` 防止仓库长期无活动导致 GitHub Actions 被自动停用
 
 #### 注意事项
 
 - GitHub Actions 免费额度为每月 2000 分钟，本项目的签到任务约消耗 1-2 分钟/次
 - 确保仓库为 Public 或拥有 GitHub Actions 的私有仓库配额
-- 如果长时间（60天）没有任何提交，GitHub 会自动停用 Actions，保活工作流会自动处理这个问题（会带来额外的 commit，可能会导致与上游仓库无法及时同步）
+- 如果长时间（60天）没有任何提交，GitHub 会自动停用 Actions，`workflow-keepalive` 会在每次定时执行时通过 GitHub API 重新启用工作流，无需产生额外的 commit
 
 </details>
 
