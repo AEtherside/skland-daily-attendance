@@ -7,6 +7,7 @@ import waitOn from 'wait-on'
 const PORT = process.env.NITRO_PORT || 3000
 const HOST = process.env.NITRO_HOST || 'localhost'
 const BASE_URL = `http://${HOST}:${PORT}`
+const TASK_URL = `${BASE_URL}/_nitro/tasks/attendance`
 
 core.info('🚀 准备启动 Nitro 服务...')
 
@@ -47,8 +48,29 @@ server.on('error', (error) => {
   exitCode = 1
 })
 
+// 轮询等待 Tasks API 路由注册完毕
+// Nitro 的 experimental.tasks 模块可能在 HTTP 服务就绪后才完成路由注册
+async function waitForTaskReady(maxAttempts = 15, interval = 2000) {
+  for (let i = 1; i <= maxAttempts; i++) {
+    try {
+      const res = await fetch(TASK_URL)
+      // 任何响应（包括非 200）都说明路由已注册
+      core.info(`Attempt ${i}/${maxAttempts}: ${TASK_URL} -> ${res.status}`)
+      return
+    }
+    catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      core.info(`Attempt ${i}/${maxAttempts}: ${TASK_URL} -> ${msg}`)
+    }
+    if (i < maxAttempts) {
+      await new Promise(r => setTimeout(r, interval))
+    }
+  }
+  throw new Error('Tasks API 未能在预期时间内就绪')
+}
+
 try {
-  // 等待服务就绪
+  // 等待 HTTP 服务就绪
   await core.group('等待服务启动', async () => {
     core.info(`服务地址: ${BASE_URL}`)
     core.info('超时时间: 60 秒')
@@ -57,15 +79,20 @@ try {
       timeout: 60000, // 60 秒超时
       interval: 1000, // 每秒检查一次
     })
-    core.info('✅ 服务已启动')
+    core.info('✅ HTTP 服务已启动')
+  })
+
+  // 等待 Tasks API 路由注册完毕
+  await core.group('等待 Tasks API 就绪', async () => {
+    await waitForTaskReady()
+    core.info('✅ Tasks API 已就绪')
   })
 
   // 触发 attendance 任务
   await core.group('执行 attendance 任务', async () => {
-    const taskUrl = `${BASE_URL}/_nitro/tasks/attendance`
-    core.info(`任务 URL: ${taskUrl}`)
+    core.info(`任务 URL: ${TASK_URL}`)
 
-    const response = await fetch(taskUrl)
+    const response = await fetch(TASK_URL)
 
     if (!response.ok) {
       throw new Error(`请求失败: ${response.status} ${response.statusText}`)
