@@ -121,14 +121,40 @@ export function createMessageCollector(options: CreateMessageCollectorOptions): 
 
     if (urls.length > 0) {
       console.info('[notify] normalized urls =', urls)
-      const notifier = createNotifier(urls)
-      try {
-        await notifier.send({ title, body: content })
-      }
-      catch (sendError) {
-        // Don't let notification failures crash the attendance task
-        console.error('[notify] send failed:', sendError)
-        hasError = true
+
+      for (const url of urls) {
+        try {
+          // Bypass statocysts for json:// / jsons:// — its normalizeTarget()
+          // uses new URL() which mangles nested :// (e.g. json://https://... → json://https//...)
+          const jsonMatch = url.match(/^(jsons?):\/\/(.+)/i)
+          if (jsonMatch) {
+            let endpoint = jsonMatch[2]
+            if (!/^https?:\/\//i.test(endpoint)) {
+              // Inner URL has no protocol — add one (json→http, jsons→https)
+              const proto = jsonMatch[1].toLowerCase() === 'jsons' ? 'https://' : 'http://'
+              endpoint = proto + endpoint
+            }
+            console.info('[notify] json channel POST to:', endpoint)
+            const res = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ title, body: content }),
+            })
+            if (!res.ok) {
+              console.error(`[notify] json channel returned ${res.status}:`, await res.text().catch(() => ''))
+              hasError = true
+            }
+            continue
+          }
+
+          const notifier = createNotifier([url])
+          await notifier.send({ title, body: content })
+        }
+        catch (sendError) {
+          // Don't let notification failures crash the attendance task
+          console.error('[notify] send failed:', sendError)
+          hasError = true
+        }
       }
     }
 

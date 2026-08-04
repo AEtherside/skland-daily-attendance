@@ -5,7 +5,6 @@
  * Env:   SKLAND_NOTIFICATION_URLS (必填)
  */
 
-import { createNotifier } from 'statocysts'
 import process from 'node:process'
 
 // -------- normalizeUrl (from utils/message.ts) --------
@@ -34,18 +33,56 @@ console.log('原始字符码:', [...rawUrl].map(c => c.charCodeAt(0).toString(16
 const normalizedUrl = normalizeUrl(rawUrl)
 console.log('清洗后 URL:', normalizedUrl)
 
+// Bypass statocysts for json:// / jsons:// — its URL parser mangles nested ://
+const jsonMatch = normalizedUrl.match(/^(jsons?):\/\/(.+)/i)
+if (jsonMatch) {
+  // The part after json:// is the actual endpoint URL
+  let endpoint = jsonMatch[2]
+  if (!/^https?:\/\//i.test(endpoint)) {
+    // Inner URL has no protocol — add one (json→http, jsons→https)
+    const proto = jsonMatch[1].toLowerCase() === 'jsons' ? 'https://' : 'http://'
+    endpoint = proto + endpoint
+  }
+  console.log('json channel POST to:', endpoint)
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: '【森空岛每日签到 - 调试消息】',
+        body: [
+          '调试消息，验证通知通道。',
+          `时间: ${new Date().toISOString()}`,
+        ].join('\n'),
+      }),
+    })
+    if (res.ok) {
+      console.log('✅ 通知发送成功 (HTTP', res.status, ')')
+      const replyText = await res.text().catch(() => '')
+      console.log('Response:', replyText || '(empty)')
+      process.exit(0)
+    }
+    console.error('❌ 通知发送失败 (HTTP', res.status, ')')
+    const replyText = await res.text().catch(() => '')
+    console.error('Response:', replyText || '(empty)')
+    process.exit(1)
+  }
+  catch (err) {
+    console.error('❌ 通知发送失败')
+    console.error('Error:', err.message ?? err)
+    process.exit(1)
+  }
+}
+
+// Other protocols: use statocysts
+const { createNotifier } = await import('statocysts')
 const notifier = createNotifier([normalizedUrl])
 
 try {
   await notifier.send({
     title: '【森空岛每日签到 - 调试消息】',
-    body: [
-      '这是一条调试消息，用于验证通知通道是否正常工作。',
-      '',
-      `原始 URL: ${rawUrl}`,
-      `清洗后 URL: ${normalizedUrl}`,
-      `时间: ${new Date().toISOString()}`,
-    ].join('\n'),
+    body: `调试消息。\n时间: ${new Date().toISOString()}`,
   })
   console.log('✅ 通知发送成功')
   process.exit(0)
@@ -62,6 +99,5 @@ catch (err) {
       if (f.cause?.stack) console.error('  stack:', f.cause.stack)
     }
   }
-  if (err.stack) console.error('Stack:', err.stack)
   process.exit(1)
 }
