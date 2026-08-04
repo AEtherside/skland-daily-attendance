@@ -25,7 +25,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Debug notification
+      - name: Debug raw bytes (shell)
+        run: |
+          echo "=== raw value ==="
+          echo "$SKLAND_NOTIFICATION_URLS"
+          echo "=== hex dump ==="
+          printf '%s' "$SKLAND_NOTIFICATION_URLS" | xxd | head -10
+        env:
+          SKLAND_NOTIFICATION_URLS: ${{ secrets.SKLAND_NOTIFICATION_URLS }}
+
+      - name: Debug notification (Node.js)
         run: node scripts/debug-notify.mjs
         env:
           SKLAND_NOTIFICATION_URLS: ${{ secrets.SKLAND_NOTIFICATION_URLS }}

@@ -12,8 +12,8 @@
 function normalizeUrl(url) {
   let normalized = url.trim()
 
-  // Fix missing colon in http/https: "https//" → "https://", "http//" → "http://"
-  normalized = normalized.replace(/^(https?)\/\/([^/])/i, '$1://$2')
+  // Fix missing colon: "https//" → "https://" (at start or after channel prefix like "json://")
+  normalized = normalized.replace(/(^|:\/\/)(https?)\/\/([^/])/gi, '$1$2://$3')
 
   // If URL already has a recognized scheme, return as-is
   // (matches json://, tg://, http://, https://, etc.)
@@ -57,6 +57,8 @@ const tests = [
   ['https://is14w.xyz/path', 'https://is14w.xyz/path', '正常 https 不变'],
   ['is14w.xyz/path', 'https://is14w.xyz/path', '无协议自动补 https://'],
   ['  https://is14w.xyz/path  ', 'https://is14w.xyz/path', '前后空格被 trim'],
+  // 真实 case: json:// 前缀 + 缺冒号的 https//
+  ['json://https//is14w.xyz/wp-json/skland/v1/notify?key=abc', 'json://https://is14w.xyz/wp-json/skland/v1/notify?key=abc', 'json:// 前缀 + 缺冒号 https// 被修复'],
 ]
 
 let passed = 0

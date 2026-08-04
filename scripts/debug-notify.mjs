@@ -11,7 +11,8 @@ import process from 'node:process'
 // -------- normalizeUrl (from utils/message.ts) --------
 function normalizeUrl(url) {
   let normalized = url.trim()
-  normalized = normalized.replace(/^(https?)\/\/([^/])/i, '$1://$2')
+  // Fix "https//" → "https://" at start or after a channel prefix like "json://"
+  normalized = normalized.replace(/(^|:\/\/)(https?)\/\/([^/])/gi, '$1$2://$3')
   if (/^[a-z][a-z0-9+.-]*:\/\//i.test(normalized)) {
     return normalized
   }
@@ -27,6 +28,8 @@ if (!rawUrl) {
 }
 
 console.log('原始 URL:', rawUrl)
+console.log('原始长度:', rawUrl.length)
+console.log('原始字符码:', [...rawUrl].map(c => c.charCodeAt(0).toString(16)).join(' '))
 
 const normalizedUrl = normalizeUrl(rawUrl)
 console.log('清洗后 URL:', normalizedUrl)

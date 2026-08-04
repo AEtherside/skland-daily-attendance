@@ -12,8 +12,8 @@ export function toArray<T>(value: T | T[]): T[] {
 export function normalizeUrl(url: string): string {
   let normalized = url.trim()
 
-  // Fix missing colon in http/https: "https//" → "https://", "http//" → "http://"
-  normalized = normalized.replace(/^(https?)\/\/([^/])/i, '$1://$2')
+  // Fix missing colon: "https//" → "https://" (at start or after channel prefix like "json://")
+  normalized = normalized.replace(/(^|:\/\/)(https?)\/\/([^/])/gi, '$1$2://$3')
 
   // If URL already has a recognized scheme, return as-is
   // (matches json://, tg://, http://, https://, etc.)
