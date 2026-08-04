@@ -48,27 +48,6 @@ server.on('error', (error) => {
   exitCode = 1
 })
 
-// 轮询等待 Tasks API 路由注册完毕
-// Nitro 的 experimental.tasks 模块可能在 HTTP 服务就绪后才完成路由注册
-async function waitForTaskReady(maxAttempts = 15, interval = 2000) {
-  for (let i = 1; i <= maxAttempts; i++) {
-    try {
-      const res = await fetch(TASK_URL)
-      // 任何响应（包括非 200）都说明路由已注册
-      core.info(`Attempt ${i}/${maxAttempts}: ${TASK_URL} -> ${res.status}`)
-      return
-    }
-    catch (e) {
-      const msg = e instanceof Error ? e.message : String(e)
-      core.info(`Attempt ${i}/${maxAttempts}: ${TASK_URL} -> ${msg}`)
-    }
-    if (i < maxAttempts) {
-      await new Promise(r => setTimeout(r, interval))
-    }
-  }
-  throw new Error('Tasks API 未能在预期时间内就绪')
-}
-
 try {
   // 等待 HTTP 服务就绪
   await core.group('等待服务启动', async () => {
@@ -82,17 +61,18 @@ try {
     core.info('✅ HTTP 服务已启动')
   })
 
-  // 等待 Tasks API 路由注册完毕
-  await core.group('等待 Tasks API 就绪', async () => {
-    await waitForTaskReady()
-    core.info('✅ Tasks API 已就绪')
-  })
-
-  // 触发 attendance 任务
+  // 触发 attendance 任务（404 重试：tasks 路由可能尚未注册完毕）
   await core.group('执行 attendance 任务', async () => {
     core.info(`任务 URL: ${TASK_URL}`)
 
-    const response = await fetch(TASK_URL)
+    const maxRetries = 10
+    let response
+    for (let i = 0; i < maxRetries; i++) {
+      response = await fetch(TASK_URL)
+      if (response.status !== 404) break
+      core.info(`Tasks API 尚未就绪 (404)，重试 ${i + 1}/${maxRetries}...`)
+      await new Promise(r => setTimeout(r, 2000))
+    }
 
     if (!response.ok) {
       throw new Error(`请求失败: ${response.status} ${response.statusText}`)
