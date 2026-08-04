@@ -1,0 +1,31 @@
+name: debug-notify
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.13.0
+          cache: pnpm
+          cache-dependency-path: '**/pnpm-lock.yaml'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Debug notification
+        run: node scripts/debug-notify.mjs
+        env:
+          SKLAND_NOTIFICATION_URLS: ${{ secrets.SKLAND_NOTIFICATION_URLS }}
