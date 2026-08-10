@@ -1,4 +1,4 @@
-import { createNotifier } from 'statocysts'
+import { createNotifier } from './notifier'
 
 export function toArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value]
@@ -96,11 +96,25 @@ export function createMessageCollector(options: CreateMessageCollectorOptions): 
     if (urls.length > 0) {
       const notifier = createNotifier(urls)
       try {
-        await notifier.send({ title, body: content })
-      }
-      catch (sendError) {
-        // Don't let notification failures crash the attendance task
-        console.error('[notify] send failed:', sendError)
+        const results = await notifier.send({ title, body: content })
+
+        // 如果任意一个通知失败，则记录，但不抛出致命错误
+        let anyFailed = false
+        for (const res of results) {
+          if (!res.ok) {
+            anyFailed = true
+            console.error('[notify] send failed:', res)
+          } else {
+            console.info('[notify] sent:', res.status)
+          }
+        }
+        if (anyFailed) {
+          // 保持和之前一致：标记为发生错误（有需要时可由 onError 处理）
+          hasError = true
+        }
+      } catch (sendError) {
+        // 最后一道防线：不让通知错误致命
+        console.error('[notify] send threw an exception:', sendError)
         hasError = true
       }
     }
