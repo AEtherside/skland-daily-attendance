@@ -89,9 +89,13 @@ export function createMessageCollector(options: CreateMessageCollectorOptions): 
   }
 
   const push = async () => {
-    const title = '【森空岛每日签到】'
+    // Use an ASCII-safe title to avoid receiver rejecting the title
+    const title = 'Skland Daily'
     const content = messages.join('\n\n')
     const urls = options.notificationUrls ? toArray(options.notificationUrls) : []
+
+    // Debug: log content preview so we can confirm what's sent
+    console.info('[notify-debug] content length=', content.length, 'preview=', content.slice(0, 400))
 
     if (urls.length > 0) {
       const notifier = createNotifier(urls)
