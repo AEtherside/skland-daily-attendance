@@ -4,6 +4,14 @@ import process from 'node:process'
 import * as core from '@actions/core'
 import waitOn from 'wait-on'
 
+// github action secrets 未设置时，空串会覆盖 nitro runtimeConfig 默认值
+// 直接删除未设置的 secret 环境变量以规避该问题
+for (const key of Object.keys(process.env)) {
+  if (key.startsWith('SKLAND_') && !process.env[key]) {
+    delete process.env[key]
+  }
+}
+
 const PORT = process.env.NITRO_PORT || 3000
 const HOST = process.env.NITRO_HOST || 'localhost'
 const BASE_URL = `http://${HOST}:${PORT}`

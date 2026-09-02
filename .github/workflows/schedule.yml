@@ -12,7 +12,7 @@ on:
         required: false
       SKLAND_ANONYMOUS:
         required: false
-      MAX_RETRIES:
+      SKLAND_MAX_RETRIES:
         required: false
     inputs:
       repository:
@@ -50,7 +50,7 @@ jobs:
         env:
           SKLAND_TOKENS: ${{ secrets.SKLAND_TOKENS }}
           SKLAND_NOTIFICATION_URLS: ${{ secrets.SKLAND_NOTIFICATION_URLS }}
-          SKLAND_MAX_RETRIES: ${{ secrets.MAX_RETRIES }}
+          SKLAND_MAX_RETRIES: ${{ secrets.SKLAND_MAX_RETRIES }}
           SKLAND_ANONYMOUS: ${{ secrets.SKLAND_ANONYMOUS }}
 
   workflow-keepalive:
