@@ -3,6 +3,7 @@ import { platform } from 'node:os'
 import process from 'node:process'
 import * as core from '@actions/core'
 import waitOn from 'wait-on'
+import { waitForScheduledAttendance } from '../utils/schedule.ts'
 
 // github action secrets 未设置时，空串会覆盖 nitro runtimeConfig 默认值
 // 直接删除未设置的 secret 环境变量以规避该问题
@@ -16,6 +17,9 @@ const PORT = process.env.NITRO_PORT || 3000
 const HOST = process.env.NITRO_HOST || 'localhost'
 const BASE_URL = `http://${HOST}:${PORT}`
 const TASK_URL = `${BASE_URL}/_nitro/tasks/attendance`
+
+if (process.env.GITHUB_EVENT_NAME === 'schedule')
+  await waitForScheduledAttendance(process.env.SKLAND_SCHEDULE_JITTER_SECONDS)
 
 core.info('🚀 准备启动 Nitro 服务...')
 
@@ -77,7 +81,8 @@ try {
     let response
     for (let i = 0; i < maxRetries; i++) {
       response = await fetch(TASK_URL)
-      if (response.status !== 404) break
+      if (response.status !== 404)
+        break
       core.info(`Tasks API 尚未就绪 (404)，重试 ${i + 1}/${maxRetries}...`)
       await new Promise(r => setTimeout(r, 2000))
     }

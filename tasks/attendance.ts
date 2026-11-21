@@ -7,6 +7,7 @@ import { defineTask } from 'nitro/task'
 import { createClient } from 'skland-kit'
 import { createContext } from 'unctx'
 import { attendCharacter, createMessageCollector, generateAttendanceKey, getSplitByComma } from '~/utils/index'
+import { waitForScheduledAttendance } from '~/utils/schedule'
 
 interface GameStats {
   gameName: string
@@ -151,8 +152,11 @@ export default defineTask<'success' | 'failed'>({
     name: 'attendance',
     description: '每日签到',
   },
-  async run() {
+  async run({ context, payload }) {
     const config = useRuntimeConfig()
+
+    if (context.cloudflare || payload.scheduledTime)
+      await waitForScheduledAttendance(config.scheduleJitterSeconds)
 
     const tokens = getSplitByComma(config.tokens)
 

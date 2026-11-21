@@ -13,6 +13,9 @@ services:
       # 最大重试次数 (可选，默认为 3)
       - SKLAND_MAX_RETRIES=${SKLAND_MAX_RETRIES:-3}
 
+      # 定时签到随机等待上限（秒）
+      - SKLAND_SCHEDULE_JITTER_SECONDS=${SKLAND_SCHEDULE_JITTER_SECONDS:-300}
+
       # KV 存储配置 (可选)
       # - KV_REST_API_URL=${KV_REST_API_URL:-}
       # - KV_REST_API_TOKEN=${KV_REST_API_TOKEN:-}

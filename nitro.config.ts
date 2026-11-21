@@ -6,12 +6,13 @@ export default defineConfig({
     tasks: true,
   },
   scheduledTasks: {
-    '30 */2 * * *': ['attendance'],
+    '0 1-4 * * *': ['attendance'],
   },
   runtimeConfig: {
     tokens: '',
     notificationUrls: '',
     maxRetries: '3',
+    scheduleJitterSeconds: '',
     nitro: {
       envPrefix: 'SKLAND_',
     },

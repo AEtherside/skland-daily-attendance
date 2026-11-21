@@ -2,7 +2,7 @@ name: attendance
 
 on:
   schedule:
-    - cron: '0 16 * * *'
+    - cron: '0 1-4 * * *'
   workflow_dispatch:
   workflow_call:
     secrets:
@@ -51,6 +51,7 @@ jobs:
           SKLAND_TOKENS: ${{ secrets.SKLAND_TOKENS }}
           SKLAND_NOTIFICATION_URLS: ${{ secrets.SKLAND_NOTIFICATION_URLS }}
           SKLAND_MAX_RETRIES: ${{ secrets.SKLAND_MAX_RETRIES }}
+          SKLAND_SCHEDULE_JITTER_SECONDS: ${{ vars.SKLAND_SCHEDULE_JITTER_SECONDS }}
           SKLAND_ANONYMOUS: ${{ secrets.SKLAND_ANONYMOUS }}
 
   workflow-keepalive:

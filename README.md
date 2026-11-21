@@ -17,6 +17,10 @@
 
 基于 Nitro 构建，使用 Scheduled Tasks 实现定时任务来签到，查看 [Nitro 文档](https://nitro.build/guide/tasks#platform-support) 了解支持的平台。
 
+默认在北京时间每天 09:00、10:00、11:00、12:00 触发。每次定时触发后随机等待 0～5 分钟，再开始本轮签到。
+
+可通过 `SKLAND_SCHEDULE_JITTER_SECONDS` 调整每轮随机等待的上限，接受 0～300 的整数，默认 `300`，设为 `0` 可立即执行。Cloudflare Workers 在 **Settings → Variables and Secrets** 添加 Text 变量，GitHub Actions 在 **Settings → Secrets and variables → Actions → Variables** 添加仓库变量，Docker Compose 则在 `.env` 中设置。
+
 ### Cloudflare Workers 部署
 
 通过一键部署到 Cloudflare Workers，只需要[配置对应的环境变量](#配置说明)即可。
@@ -66,7 +70,7 @@
 
 4. **执行签到**
 
-   GitHub Actions 会在每天 16:00 (UTC) 自动执行签到任务。你也可以手动触发：
+   你也可以在 GitHub Actions 中手动触发签到：
 
    - 进入 `Actions` 标签页
    - 选择 `attendance` 工作流
@@ -76,7 +80,7 @@
 #### 工作流说明
 
 - **attendance** (`.github/workflows/schedule.yml`)
-  - 自动签到工作流，每天 16:00 (UTC) 定时执行
+  - 自动签到工作流，每天 01:00、02:00、03:00、04:00（UTC）定时触发
   - 支持手动触发和通过 `workflow_call` 被其他工作流调用
   - 定时执行时会自动调用 `liskin/gh-workflow-keepalive@v1` 防止仓库长期无活动导致 GitHub Actions 被自动停用
 
@@ -196,7 +200,7 @@ docker run -d \
 
 - 默认使用本地文件存储，数据会持久化到 `./data` 目录
 - 如果需要使用 Redis 持久化，可以取消注释 `docker-compose.yml` 中的 Redis 服务配置
-- 容器会按照 `nitro.config.ts` 中配置的定时任务自动执行签到（默认每 2 小时执行一次）
+- 容器默认使用 UTC，裸跑 Node.js 时请将进程时区设为 UTC，以使用上述默认时段。
 - 如需调整定时任务频率，请修改 `nitro.config.ts` 中的 `scheduledTasks` 配置后重新构建镜像
 
 </details>
